@@ -58,14 +58,17 @@ def _get_redmine_issues() -> list:
     params = {
         "project_id": REDMINE_PROJECT_ID,
         "key": REDMINE_API_KEY,
-        "limit": 500,
+        "offset": 0,
+        "limit": 100,
     }
-    res = requests.get(get_url, params).json()
-    if res["total_count"] > res["limit"]:
-        # TODO このメッセージが出ていたら取り切れていないチケットがある
-        # limitを見直す, ページング処理を入れるなどの対応が必要
-        print("Warn: TotalCount > Limit.")
-    return res["issues"]
+    issues = []
+    while True:
+        res = requests.get(get_url, params).json()
+        issues += res["issues"]
+        if res["total_count"] <= params["offset"] + res["limit"]:
+            break
+        params["offset"] = res["limit"]
+    return issues
 
 
 def _generate_issue_number_converter(redmine_issues: list) -> None:
@@ -75,7 +78,7 @@ def _generate_issue_number_converter(redmine_issues: list) -> None:
     for issue in redmine_issues:
         subject = issue["subject"]
         if BACKLOG_PREFIX in subject:
-            backlog_number = subject.split(BACKLOG_PREFIX)[1].split(" ")[0]
+            backlog_number = subject.split(BACKLOG_PREFIX)[1].split(" ")[0].split("/")[0]
             issue_number_converter.update({backlog_number: issue["id"]})
     return
 
