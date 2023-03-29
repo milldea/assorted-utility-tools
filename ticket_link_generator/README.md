@@ -34,11 +34,15 @@ RedmineモードではBacklogと同じ課題番号のissueがプロジェクト�
 2. `output/` ディレクトリ内に`{元ファイル名}_added.md`として整形後のファイルがmarkdown形式で出力される
 
 #### オプション
-* `-redmine`   
+* `-redmine` (Redmineモード)   
   RedmineとBacklogを併用している場合に使える機能です。   
   `REDMINE_PROJECT_ID`で指定したプロジェクト上にBacklogチケットの課題番号が含まれるissueがある場合、Redmine記法のRedmineチケットリンク(`#{チケット番号}`)が合わせて挿入されます。   
-  ない場合、`#TODO`として挿入されます。   
+  指定のプロジェクトに該当のチケットがない場合、`#TODO`として挿入されます。   
   ex. `python3 add_ticket_link.py original/example.txt -redmine`
+* `-P` (プレーンモード)   
+  -redmineオプション使用時のみ有効なオプションです。   
+  Redmineチケットのリンクが通常のマークダウン形式のリンクとなります。   
+  ex. `python3 add_ticket_link.py original/example.txt -redmine -P`
 
 #### メッセージ出力
 * `Source file is not specified.` => 元ファイルが指定されていない
@@ -113,6 +117,45 @@ complete.
     * [HOGE-1](https://hogefuga123.backlog.jp/view/HOGE-1) #12345 が終わったら作業する
 * Aさんにお願いすること
     * [HOGE-3](https://hogefuga123.backlog.jp/view/HOGE-3) #TODO fugaサーバ証明書の更新
+### コンソール出力
+```
+Redmine Issue NotFound in project-hoge, HOGE-3.
+complete.
+```
+
+## オプションあり(Redmineモード・プレーンモード併用)
+* Redmine の状態
+  * HOGE-1 hogeAPIの改修, (急) HOGE-2 API仕様書の修正 というチケットあり
+  * HOGE-3はRedmineチケットなし
+`$python3 add_ticket_link.py original/example.md -redmine -P`
+### before
+```
+メモ
+* HOGE-1 hogeAPIの改修
+    * xxを改修して動作確認する
+* HOGE-2 API仕様書の修正
+    * HOGE-1 が終わったら作業する
+* Aさんにお願いすること
+    * HOGE-3 fugaサーバ証明書の更新
+```
+### after
+```
+メモ
+* [HOGE-1](https://hogefuga123.backlog.jp/view/HOGE-1) [#12345](https://www.hogefuga123.com/redmine/issues/12345) hogeAPIの改修
+    * xxを改修して動作確認する
+* [HOGE-2](https://hogefuga123.backlog.jp/view/HOGE-2) [#12346](https://www.hogefuga123.com/redmine/issues/12346) API仕様書の修正
+    * [HOGE-1](https://hogefuga123.backlog.jp/view/HOGE-1) [#12345](https://www.hogefuga123.com/redmine/issues/12345) が終わったら作業する
+* Aさんにお願いすること
+    * [HOGE-3](https://hogefuga123.backlog.jp/view/HOGE-3) [#TODO](https://www.hogefuga123.com/redmine/issues/TODO) fugaサーバ証明書の更新
+```
+↓ markdownプレビュー   
+メモ
+* [HOGE-1](https://hogefuga123.backlog.jp/view/HOGE-1) [#12345](https://www.hogefuga123.com/redmine/issues/12345) hogeAPIの改修
+    * xxを改修して動作確認する
+* [HOGE-2](https://hogefuga123.backlog.jp/view/HOGE-2) [#12346](https://www.hogefuga123.com/redmine/issues/12346) API仕様書の修正
+    * [HOGE-1](https://hogefuga123.backlog.jp/view/HOGE-1) [#12345](https://www.hogefuga123.com/redmine/issues/12345) が終わったら作業する
+* Aさんにお願いすること
+    * [HOGE-3](https://hogefuga123.backlog.jp/view/HOGE-3) [#TODO](https://www.hogefuga123.com/redmine/issues/TODO) fugaサーバ証明書の更新
 ### コンソール出力
 ```
 Redmine Issue NotFound in project-hoge, HOGE-3.

@@ -17,6 +17,7 @@ REDMINE_PROJECT_ID = "project-hoge"
 REDMINE_API_KEY = "abcdefghijklmnopqrstuvwxyz"
 
 redmine_mode: bool = False
+plain_mode: bool = False
 issue_number_converter: dict = {}
 
 
@@ -25,6 +26,7 @@ issue_number_converter: dict = {}
     $ python3 add_ticket_link.py {元のチケットのテキストファイル}
 オプション:
     -redmine : Redmineモード
+    -P : プレーンモード
 """
 
 
@@ -98,10 +100,17 @@ def _generate_link_added_line(line: str, number: str) -> str:
                 f"Redmine Issue NotFound in {REDMINE_PROJECT_ID}, "
                 f"{BACKLOG_PREFIX}{number}."
             )
-        new_line = line.replace(
-            BACKLOG_PREFIX + number,
-            f"{backlog_url} #{redmine_number}",
-        )
+        if plain_mode:
+            redmine_url = f"[#{redmine_number}]({REDMINE_BASE_URL}/{redmine_number})"  # noqa:E501
+            new_line = line.replace(
+                BACKLOG_PREFIX + number,
+                f"{backlog_url} {redmine_url}",
+            )        
+        else:
+            new_line = line.replace(
+                BACKLOG_PREFIX + number,
+                f"{backlog_url} #{redmine_number}",
+            )
     else:
         new_line = line.replace(
             BACKLOG_PREFIX + number,
@@ -130,6 +139,8 @@ if __name__ == "__main__":
         for arg in args[1:]:
             if arg.startswith("-redmine"):
                 redmine_mode = True
+            if arg.startswith("-P"):
+                plain_mode = True
         handler(original_path)
     except FileNotSpecifiedError:
         print("Source file is not specified.")
