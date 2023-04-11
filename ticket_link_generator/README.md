@@ -6,12 +6,17 @@ RedmineモードではBacklogと同じ課題番号のissueがプロジェクト�
 ## 注意事項
 リポジトリはpublicです。   
 実際に使用されているRedmine, BacklogのURLおよびAPI Keyなどのプロジェクト情報は絶対にコミットしないでください。   
-事故防止のため、プロジェクト情報はスクリプト上部に用意した定数以外に入れての使用は非推奨とします。
+事故防止のため、.gitignoreファイルによって以下のファイルをGitの追跡対象から除外しています。
+
+* originalおよびoutputディレクトリのexampleから始まるファイルを除く全てのファイル・ディレクトリ
+* config.json
 
 ## 構造
 ```
 .
 ├── README.md               => 本ページ
+├── .gitignore              => Git追跡除外設定ファイル
+├── config_sample.json      => config.json生成用のサンプルファイル
 ├── add_ticket_link.py      => メインスクリプト
 ├── original
 │   └── example.txt         => 元ファイルサンプル
@@ -27,7 +32,14 @@ RedmineモードではBacklogと同じ課題番号のissueがプロジェクト�
 3. 環境準備
    1. Python3系が入っている状態にする
    2. 本ディレクトリ直下で`$pip install -r requirements.txt` を実行する
-4. `add_ticket_link.py` の上部の変数に必要な情報を入れる
+4. `config.json` ファイルを作成し、必要な情報を入れる
+   1. `config_sample.json` をコピーし、以下の情報を自身の使用環境に合わせて埋めてください。   
+   ただし、REDMINE_から始まるキーについてはRedmineモードを使用しない場合はダミーの値で構いません。
+      * "BACKLOG_URL_BASE": BacklogプロジェクトのURL
+      * "BACKLOG_PREFIX": 課題番号のプレフィックスをハイフンまで
+      * "REDMINE_BASE_URL": RedmineのURL
+      * "REDMINE_PROJECT_ID": RedmineのプロジェクトID
+      * "REDMINE_API_KEY": Redmine APIのキー
 
 ## 実行
 1. ディレクトリ直下で `$python3 add_ticket_link.py {元ファイルのパス}` を実行

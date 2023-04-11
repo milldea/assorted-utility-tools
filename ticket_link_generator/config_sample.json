@@ -1,0 +1,7 @@
+{
+  "BACKLOG_URL_BASE": "https://hogefuga123.backlog.jp/view",
+  "BACKLOG_PREFIX": "HOGE-",
+  "REDMINE_BASE_URL": "https://www.hogefuga123.com/redmine/issues",
+  "REDMINE_PROJECT_ID": "project-hoge",
+  "REDMINE_API_KEY": "abcdefghijklmnopqrstuvwxyz"
+}
