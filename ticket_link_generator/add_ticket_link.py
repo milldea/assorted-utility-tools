@@ -1,25 +1,20 @@
 import re
 import sys
+import json
 
 import requests
 
-# Backlog情報(必須)
-# プロジェクトのURL
-BACKLOG_URL_BASE = "https://hogefuga123.backlog.jp/view"
-# 課題番号のプレフィックスをハイフンまで指定
-BACKLOG_PREFIX = "HOGE-"
-# Redmine情報(使用しない場合は入力不要)
-# RedmineのURL
-REDMINE_BASE_URL = "https://www.hogefuga123.com/redmine/issues"
-# RedmineのプロジェクトID
-REDMINE_PROJECT_ID = "project-hoge"
-# Redmineの個人設定から取得可能
-REDMINE_API_KEY = "abcdefghijklmnopqrstuvwxyz"
+config_json = open("config.json", "r")
+config = json.load(config_json)
+BACKLOG_URL_BASE = config["BACKLOG_URL_BASE"]
+BACKLOG_PREFIX = config["BACKLOG_PREFIX"]
+REDMINE_BASE_URL = config["REDMINE_BASE_URL"]
+REDMINE_PROJECT_ID = config["REDMINE_PROJECT_ID"]
+REDMINE_API_KEY = config["REDMINE_API_KEY"]
 
 redmine_mode: bool = False
 plain_mode: bool = False
 issue_number_converter: dict = {}
-
 
 """
 実行方法:
@@ -80,7 +75,9 @@ def _generate_issue_number_converter(redmine_issues: list) -> None:
     for issue in redmine_issues:
         subject = issue["subject"]
         if BACKLOG_PREFIX in subject:
-            backlog_number = subject.split(BACKLOG_PREFIX)[1].split(" ")[0].split("/")[0]
+            backlog_number = (
+                subject.split(BACKLOG_PREFIX)[1].split(" ")[0].split("/")[0]
+            )
             issue_number_converter.update({backlog_number: issue["id"]})
     return
 
@@ -101,11 +98,13 @@ def _generate_link_added_line(line: str, number: str) -> str:
                 f"{BACKLOG_PREFIX}{number}."
             )
         if plain_mode:
-            redmine_url = f"[#{redmine_number}]({REDMINE_BASE_URL}/{redmine_number})"  # noqa:E501
+            redmine_url = (
+                f"[#{redmine_number}]({REDMINE_BASE_URL}/{redmine_number})"  # noqa:E501
+            )
             new_line = line.replace(
                 BACKLOG_PREFIX + number,
                 f"{backlog_url} {redmine_url}",
-            )        
+            )
         else:
             new_line = line.replace(
                 BACKLOG_PREFIX + number,
