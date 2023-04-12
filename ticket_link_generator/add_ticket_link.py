@@ -159,6 +159,6 @@ if __name__ == "__main__":
         handler(original_path)
     except FileNotSpecifiedError:
         print("Source file is not specified.")
-        print("  ex. $python3 add_ticket_link.py -f {original.txt}")
+        print("  ex. $python3 add_ticket_link.py {original.txt}")
     except Exception:
         raise
