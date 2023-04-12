@@ -46,19 +46,20 @@ RedmineモードではBacklogと同じ課題番号のissueがプロジェクト�
 2. `output/` ディレクトリ内に`{元ファイル名}_added.md`として整形後のファイルがmarkdown形式で出力される
 
 #### オプション
-* `-redmine` (Redmineモード)   
+* `-r`, `--redmine` (Redmineモード)   
   RedmineとBacklogを併用している場合に使える機能です。   
-  `REDMINE_PROJECT_ID`で指定したプロジェクト上にBacklogチケットの課題番号が含まれるissueがある場合、Redmine記法のRedmineチケットリンク(`#{チケット番号}`)が合わせて挿入されます。   
+  `REDMINE_PROJECT_ID`で指定したプロジェクト上にBacklogチケットの課題番号がタイトルに含まれるissueがある場合、Redmine記法のRedmineチケットリンク(`#{チケット番号}`)が合わせて挿入されます。   
   指定のプロジェクトに該当のチケットがない場合、`#TODO`として挿入されます。   
   ex. `python3 add_ticket_link.py original/example.txt -redmine`
-* `-P` (プレーンモード)   
-  -redmineオプション使用時のみ有効なオプションです。   
+* `-p`, `--plain` (プレーンモード)   
+  Redmineモード使用時のみ有効なオプションです。   
   Redmineチケットのリンクが通常のマークダウン形式のリンクとなります。   
   ex. `python3 add_ticket_link.py original/example.txt -redmine -P`
+* `-h`,`--help` (HELPコマンド)
 
 #### メッセージ出力
 * `Source file is not specified.` => 元ファイルが指定されていない
-* `Redmine Issue NotFound in {RedmineプロジェクトID}, {Backlog課題}.` => Backlogの課題番号を含むissueがRedmineにない
+* `Redmine Issue NotFound in {RedmineプロジェクトID}, {Backlog課題}.` => Backlogの課題番号をタイトルに含むissueがRedmineにない
 * `complete.` => 処理完了
 
 # 使用例
@@ -100,7 +101,7 @@ complete.
 * Redmine の状態
   * HOGE-1 hogeAPIの改修, (急) HOGE-2 API仕様書の修正 というチケットあり
   * HOGE-3はRedmineチケットなし
-`$python3 add_ticket_link.py original/example.md -redmine`
+`$python3 add_ticket_link.py original/example.md -r`
 ### before
 ```
 メモ
@@ -139,7 +140,7 @@ complete.
 * Redmine の状態
   * HOGE-1 hogeAPIの改修, (急) HOGE-2 API仕様書の修正 というチケットあり
   * HOGE-3はRedmineチケットなし
-`$python3 add_ticket_link.py original/example.md -redmine -P`
+`$python3 add_ticket_link.py original/example.md -r -p`
 ### before
 ```
 メモ
