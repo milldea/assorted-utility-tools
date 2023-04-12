@@ -1,6 +1,7 @@
 import re
 import sys
 import json
+from argparse import ArgumentParser
 
 import requests
 
@@ -129,20 +130,35 @@ class FileNotSpecifiedError(Exception):
 
 
 if __name__ == "__main__":
-    args = sys.argv
+    argparser = ArgumentParser()
+    argparser.add_argument("file", type=str, help="Specify original file path.")
+    argparser.add_argument(
+        "-r",
+        "--redmine",
+        action="store_true",
+        default=False,
+        help="When using redmine mode.",
+    )
+    argparser.add_argument(
+        "-p",
+        "--plain",
+        action="store_true",
+        default=False,
+        help="When using Plain mode.",
+    )
+    args = argparser.parse_args()
     try:
-        try:
-            original_path = args[1]
-        except Exception:
+        original_path = args.file
+        if not original_path:
             raise FileNotSpecifiedError
-        for arg in args[1:]:
-            if arg.startswith("-redmine"):
-                redmine_mode = True
-            if arg.startswith("-P"):
-                plain_mode = True
+
+        if args.redmine:
+            redmine_mode = True
+        if args.plain:
+            plain_mode = True
         handler(original_path)
     except FileNotSpecifiedError:
         print("Source file is not specified.")
-        print("  ex. $python3 add_ticket_link.py {original.txt}")
+        print("  ex. $python3 add_ticket_link.py -f {original.txt}")
     except Exception:
         raise
