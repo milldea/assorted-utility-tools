@@ -3,5 +3,7 @@
   "BACKLOG_PREFIX": "HOGE-",
   "REDMINE_BASE_URL": "https://www.hogefuga123.com/redmine/issues",
   "REDMINE_PROJECT_ID": "project-hoge",
-  "REDMINE_API_KEY": "abcdefghijklmnopqrstuvwxyz"
+  "REDMINE_API_KEY": "abcdefghijklmnopqrstuvwxyz",
+  "INHERIT_LINE_PREFIX": "  * 担当者",
+  "INHERIT_LINE_DEFAULT":"  * 担当者: 未定"
 }

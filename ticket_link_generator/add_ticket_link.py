@@ -1,5 +1,4 @@
 import re
-import sys
 import json
 from argparse import ArgumentParser
 
@@ -12,17 +11,23 @@ BACKLOG_PREFIX = config["BACKLOG_PREFIX"]
 REDMINE_BASE_URL = config["REDMINE_BASE_URL"]
 REDMINE_PROJECT_ID = config["REDMINE_PROJECT_ID"]
 REDMINE_API_KEY = config["REDMINE_API_KEY"]
+INHERIT_LINE_PREFIX = config["INHERIT_LINE_PREFIX"]
+INHERIT_LINE_DEFAULT = config["INHERIT_LINE_DEFAULT"]
 
 redmine_mode: bool = False
 plain_mode: bool = False
 issue_number_converter: dict = {}
+inherit_mode: bool = False
+inherit_path: str = ""
+inherit_line_dict: dict = {}
 
 """
 実行方法:
     $ python3 add_ticket_link.py {元のチケットのテキストファイル}
 オプション:
-    -redmine : Redmineモード
-    -P : プレーンモード
+    -r : Redmineモード
+    -p : プレーンモード
+    --inherit={前バージョンのチケットなど} : 継承モード
 """
 
 
@@ -33,6 +38,9 @@ def handler(original_path: str) -> None:
         redmine_issues = _get_redmine_issues()
         # RedmineとBacklogの課題番号対応表を生成
         _generate_issue_number_converter(redmine_issues)
+    if inherit_mode:
+        _generate_inherit_line_dict()
+
     file_name = original_path.split("/")[-1].split(".")[0]
 
     with open(original_path, mode="r") as f:
@@ -44,11 +52,29 @@ def handler(original_path: str) -> None:
                     # 各チケットリンクを含めた文字列を生成、書き込み
                     new_line = _generate_link_added_line(line, number)
                     new.write(new_line)
+                    if inherit_mode:
+                        if number in inherit_line_dict:
+                            new.write(inherit_line_dict[number])
+                        # inheritに保持したい対象行がないチケットにデフォルト値を挿入する場合はコメントアウトを解除する
+                        else:
+                            new.write(f"{INHERIT_LINE_DEFAULT}\n")
                     continue
                 # チケットタイトル以外の行はそのまま書き込み
                 new.write(line)
     print("complete.")
     return
+
+
+def _generate_inherit_line_dict():
+    with open(inherit_path, mode="r") as f:
+        backlog_number = ""
+        for line in f.readlines():
+            if f"[{BACKLOG_PREFIX}" in line:
+                backlog_number = line.split(BACKLOG_PREFIX)[1].split("]")[0]
+            if INHERIT_LINE_PREFIX in line:
+                inherit_line_dict.update({backlog_number: line})
+                backlog_number = ""
+    print(inherit_line_dict)
 
 
 def _get_redmine_issues() -> list:
@@ -65,7 +91,7 @@ def _get_redmine_issues() -> list:
         issues += res["issues"]
         if res["total_count"] <= params["offset"] + res["limit"]:
             break
-        params["offset"] = res["limit"]
+        params["offset"] += res["limit"]
     return issues
 
 
@@ -146,9 +172,13 @@ if __name__ == "__main__":
         default=False,
         help="When using Plain mode.",
     )
+    argparser.add_argument(
+        "--inherit", type=str, help="(Optional)Specify inherit file path."
+    )
     args = argparser.parse_args()
     try:
         original_path = args.file
+        inherit_path = args.inherit
         if not original_path:
             raise FileNotSpecifiedError
 
@@ -156,6 +186,8 @@ if __name__ == "__main__":
             redmine_mode = True
         if args.plain:
             plain_mode = True
+        if args.inherit:
+            inherit_mode = True
         handler(original_path)
     except FileNotSpecifiedError:
         print("Source file is not specified.")
