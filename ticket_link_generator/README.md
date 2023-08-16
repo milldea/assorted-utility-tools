@@ -40,6 +40,8 @@ RedmineモードではBacklogと同じ課題番号のissueがプロジェクト�
       * "REDMINE_BASE_URL": RedmineのURL
       * "REDMINE_PROJECT_ID": RedmineのプロジェクトID
       * "REDMINE_API_KEY": Redmine APIのキー
+      * "INHERIT_LINE_PREFIX": 継承させたい要素の文字列(行を特定するために使用)
+      * "INHERIT_LINE_DEFAULT": 継承させたい要素がinherit指定のファイルにない課題に対して付与する行
 
 ## 実行
 1. ディレクトリ直下で `$python3 add_ticket_link.py {元ファイルのパス}` を実行
@@ -55,6 +57,9 @@ RedmineモードではBacklogと同じ課題番号のissueがプロジェクト�
   Redmineモード使用時のみ有効なオプションです。   
   Redmineチケットのリンクが通常のマークダウン形式のリンクとなります。   
   ex. `python3 add_ticket_link.py original/example.txt -redmine -P`
+* `--inherit {INHERIT_FILE_PATH}` (継承モード)*<ベータ版機能>*   
+  本ツールを使って生成したファイルに課題ごとの要素を付加したファイルを元として、付加した要素を継承させるオプションです。   
+  ex. `python3 add_ticket_link.py original/example.md --inherit=original/example_inherit.md`
 * `-h`,`--help` (HELPコマンド)
 
 #### メッセージ出力
